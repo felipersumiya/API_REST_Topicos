@@ -5,7 +5,10 @@ import br.com.felipersumiya.kotlinRest.dto.TopicoForm
 import br.com.felipersumiya.kotlinRest.dto.TopicoView
 import br.com.felipersumiya.kotlinRest.model.Topico
 import br.com.felipersumiya.kotlinRest.service.TopicoService
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.util.UriComponentsBuilder
 import javax.validation.Valid
 
 
@@ -14,10 +17,10 @@ import javax.validation.Valid
 class TopicoController(private val service:TopicoService) {
 
 
+
+
     @GetMapping
     fun listar(): List<TopicoView>{
-
-
 
        return service.listar()
 
@@ -30,19 +33,24 @@ class TopicoController(private val service:TopicoService) {
     }
 
     @PostMapping
-    fun incluir(@RequestBody @Valid topicoDto: TopicoForm){
+    fun incluir(@RequestBody @Valid topicoDto: TopicoForm, uriBuilder :UriComponentsBuilder) :ResponseEntity<TopicoView>{
 
-        service.incluir(topicoDto)
+        val topicoView = service.incluir(topicoDto)
+        val uri = uriBuilder.path("/topicos/${topicoView.id}").build().toUri()
+
+        return ResponseEntity.created(uri).body(topicoView)
     }
 
     @PutMapping
-    fun atualizar(@RequestBody @Valid dto: AtualizacaoTopicoForm){
+    fun atualizar(@RequestBody @Valid dto: AtualizacaoTopicoForm, uriBuilder: UriComponentsBuilder):ResponseEntity<TopicoView>{
 
-        service.atualizar(dto)
+        val topicoView=  service.atualizar(dto)
+        return ResponseEntity.ok(topicoView)
 
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun excluir( @PathVariable id:Long){
 
         service.excluir(id)

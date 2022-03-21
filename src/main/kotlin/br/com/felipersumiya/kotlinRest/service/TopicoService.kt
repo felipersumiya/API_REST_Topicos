@@ -96,20 +96,22 @@ class TopicoService(
 
     }
 
-    fun incluir(topicoDto:TopicoForm) {
+    fun incluir(topicoDto:TopicoForm) :TopicoView {
 
         val topico = topicoFormMapper.map(topicoDto)
         topico.id = topicos.size.toLong() + 1
         topicos = topicos.plus(topico)
+
+        return topicoViewMapper.map(topico)
     }
 
-    fun atualizar(topicoAtualizado:AtualizacaoTopicoForm) {
+    fun atualizar(topicoAtualizado:AtualizacaoTopicoForm):TopicoView {
 
         val topico = topicos.stream().filter({ topico ->
             topico.id == topicoAtualizado.id
         }).findFirst().get()
 
-        topicos = topicos.minus(topico).plus(Topico(
+        val topicoNovo = Topico(
             id = topicoAtualizado.id,
             titulo = topicoAtualizado.titulo,
             mensagem = topicoAtualizado.mensagem,
@@ -117,8 +119,10 @@ class TopicoService(
             usuario = topico.usuario,
             status = topico.status,
             dataCriacao = topico.dataCriacao
-        ))
+        )
+        topicos = topicos.minus(topico).plus(topicoNovo)
 
+        return topicoViewMapper.map(topicoNovo)
     }
 
     @DeleteMapping
