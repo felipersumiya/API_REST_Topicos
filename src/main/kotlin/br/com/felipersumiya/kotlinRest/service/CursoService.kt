@@ -1,27 +1,20 @@
 package br.com.felipersumiya.kotlinRest.service
 
 import br.com.felipersumiya.kotlinRest.model.Curso
+import br.com.felipersumiya.kotlinRest.repositories.CursoRepository
 import org.springframework.stereotype.Service
+import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.ArrayList
 
 @Service
-class CursoService (var cursos:List<Curso>){
+class CursoService (private val cursoRepository: CursoRepository){
 
-    init {
-        val curso = Curso(
-            id= 1,
-            "Kotlin",
-            "Exatas"
-        )
-        cursos = Arrays.asList(curso)
-
-    }
 
     fun buscarPorId(id:Long):Curso{
-        return cursos.stream().filter({
-            curso -> curso.id == id
-        }).findFirst().get()
+
+        return cursoRepository.getById(id)
+
     }
 
 }
