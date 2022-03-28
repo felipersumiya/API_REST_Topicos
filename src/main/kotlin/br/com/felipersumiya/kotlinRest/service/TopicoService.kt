@@ -2,6 +2,7 @@ package br.com.felipersumiya.kotlinRest.service
 
 import br.com.felipersumiya.kotlinRest.dto.AtualizacaoTopicoForm
 import br.com.felipersumiya.kotlinRest.dto.TopicoForm
+import br.com.felipersumiya.kotlinRest.dto.TopicoPorCategoriaDto
 import br.com.felipersumiya.kotlinRest.dto.TopicoView
 import br.com.felipersumiya.kotlinRest.exceptions.NotFoundException
 import br.com.felipersumiya.kotlinRest.mapper.TopicoFormMapper
@@ -10,6 +11,8 @@ import br.com.felipersumiya.kotlinRest.model.Topico
 import br.com.felipersumiya.kotlinRest.repositories.CursoRepository
 import br.com.felipersumiya.kotlinRest.repositories.TopicoRepository
 import br.com.felipersumiya.kotlinRest.repositories.UsuarioRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.DeleteMapping
 import java.util.*
@@ -29,11 +32,21 @@ class TopicoService(
 
 ) {
 
-    fun listar(): List<TopicoView> {
+    fun listar(nomeCurso:String?, paginacao:Pageable): Page<TopicoView> {
 
-        return topicoRepository.findAll().stream().map{
+        val topicos = if(nomeCurso ==null){
+
+            topicoRepository.findAll(paginacao)
+        }else{
+
+            topicoRepository.findByCursoNome(nomeCurso,paginacao)
+        }
+
+        topicos.map {  }
+
+        return topicos.map{
             topico -> topicoViewMapper.map(topico)
-        }.collect(Collectors.toList())
+        }
 
     }
 
@@ -63,11 +76,21 @@ class TopicoService(
         return topicoViewMapper.map(topico)
     }
 
-    @DeleteMapping
+
     fun excluir(id:Long){
 
         topicoRepository.deleteById(id)
 
+    }
+
+    fun relatorioTopico(): List<TopicoPorCategoriaDto> {
+
+       return topicoRepository.relatorioTopico()
+    }
+
+    fun topicosSemREsposta(): List<Topico> {
+
+      return topicoRepository.topicosSemResposta()
     }
 
 }

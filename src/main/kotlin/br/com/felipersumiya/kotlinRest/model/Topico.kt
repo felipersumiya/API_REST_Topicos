@@ -19,7 +19,7 @@ data class Topico (
     val usuario: Usuario,
     val status: StatusTopico =StatusTopico.NAO_RESPONDIDO,
 
-    @OneToMany
+    @OneToMany(mappedBy = "topico")
     val resposta : List<Resposta> = ArrayList()
         ){
 }
